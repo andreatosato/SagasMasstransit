@@ -1,0 +1,49 @@
+﻿services:
+  order.service:
+    image: orderservice
+    build:
+      context: .
+      dockerfile: Order.Service/Dockerfile
+    environment:
+      - ConnectionStrings__SqlServer=Server=
+      - ConnectionStrings__ServiceBus=Endpoint=
+    ports:
+      - 4000:8080
+      - 4001:8081
+    depends_on:
+      - sqlserver
+
+
+  paymentservice:
+    image: paymentservice
+    build:
+      context: .
+      dockerfile: Payment.Service/Dockerfile
+    environment:
+      - ConnectionStrings__SqlServer=Server=
+      - ConnectionStrings__ServiceBus=Endpoint
+    ports:
+      - 5000:8080
+      - 5001:8081
+
+
+  inventory.service:
+    image: inventoryservice
+    build:
+      context: .
+      dockerfile: Inventory.Service/Dockerfile
+    environment:
+      - ConnectionStrings__SqlServer=Server=
+      - ConnectionStrings__ServiceBus=Endpoint=
+    ports:
+      - 6000:8080
+      - 6001:8081
+
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest 
+    ports: 
+      - "1433:1433"
+    environment:
+      - "ACCEPT_EULA=Y"
+      - "MSSQL_SA_PASSWORD="
