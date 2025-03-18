@@ -1,0 +1,51 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver_outbox
+    ports: 
+      - "1433:1433"
+    environment:
+      MSSQL_SA_PASSWORD: ""
+      ACCEPT_EULA: "Y"
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "5775:5775/udp"
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+      - "5778:5778"
+      - "16686:16686"
+      - "14250:14250"
+      - "14268:14268"
+      - "14269:14269"
+      - "9411:9411"
+  api:
+    image: sample/api
+    environment: 
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__Default=
+      - ConnectionStrings__ServiceBus=
+      - JAEGER_AGENT_HOST=jaeger
+      - JAEGER_AGENT_PORT=6831
+      - JAEGER_SAMPLER_TYPE=remote
+      - JAEGER_SAMPLING_ENDPOINT=http://jaeger:5778/sampling
+    build:
+      context: ./src
+      dockerfile: /Sample.Api/Dockerfile
+    ports:
+     - "5000:80"
+  service:
+    image: sample/worker
+    environment: 
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Default=
+      - ConnectionStrings__ServiceBus=
+      - JAEGER_AGENT_HOST=jaeger
+      - JAEGER_AGENT_PORT=6831
+      - JAEGER_SAMPLER_TYPE=remote
+      - JAEGER_SAMPLING_ENDPOINT=http://jaeger:5778/sampling
+    build:
+      context: ./src
+      dockerfile: /Sample.Worker/Dockerfile
