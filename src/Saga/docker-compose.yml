@@ -5,8 +5,8 @@
       context: .
       dockerfile: Order.Service/Dockerfile
     environment:
-      - ConnectionStrings__SqlServer=Server=
-      - ConnectionStrings__ServiceBus=Endpoint=
+      - ConnectionStrings__SqlServer=
+      - ConnectionStrings__ServiceBus=
     ports:
       - 4000:8080
       - 4001:8081
@@ -20,8 +20,8 @@
       context: .
       dockerfile: Payment.Service/Dockerfile
     environment:
-      - ConnectionStrings__SqlServer=Server=
-      - ConnectionStrings__ServiceBus=Endpoint
+      - ConnectionStrings__SqlServer=
+      - ConnectionStrings__ServiceBus=
     ports:
       - 5000:8080
       - 5001:8081
@@ -34,7 +34,7 @@
       dockerfile: Inventory.Service/Dockerfile
     environment:
       - ConnectionStrings__SqlServer=Server=
-      - ConnectionStrings__ServiceBus=Endpoint=
+      - ConnectionStrings__ServiceBus=
     ports:
       - 6000:8080
       - 6001:8081
